@@ -1,58 +1,45 @@
 // app/api/login/route.ts
-import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 
-export async function POST(request: Request) {
-  try {
-    const { email, password } = await request.json()
+export async function POST(req: NextRequest) {
+  const { email, password } = await req.json()
 
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'E-Mail und Passwort sind erforderlich.' },
-        { status: 400 }
-      )
-    }
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.error('Supabase-ENV-Variablen fehlen')
-      return NextResponse.json(
-        { error: 'Server-Konfiguration unvollständig.' },
-        { status: 500 }
-      )
-    }
-
-    // Supabase-Client auf Server-Seite
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    if (error || !data?.session) {
-      return NextResponse.json(
-        { error: 'Anmeldung fehlgeschlagen. Bitte Zugangsdaten prüfen.' },
-        { status: 401 }
-      )
-    }
-
-    // Nur das Nötigste zurückgeben
-    return NextResponse.json({
-      user: {
-        id: data.user?.id,
-        email: data.user?.email,
-      },
-      access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token,
-    })
-  } catch (err) {
-    console.error('[LOGIN_API_ERROR]', err)
+  if (!email || !password) {
     return NextResponse.json(
-      { error: 'Unerwarteter Fehler bei der Anmeldung.' },
-      { status: 500 }
+      { error: 'E-Mail und Passwort sind erforderlich.' },
+      { status: 400 }
     )
   }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+  // ✅ Wichtig: Response-Objekt VORHER erstellen, damit Supabase Cookies setzen kann
+  const res = NextResponse.json({ ok: true })
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return req.cookies.getAll()
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          res.cookies.set(name, value, options)
+        })
+      },
+    },
+  })
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (error) {
+    return NextResponse.json(
+      { error: 'Anmeldung fehlgeschlagen. Bitte Zugangsdaten prüfen.' },
+      { status: 401 }
+    )
+  }
+
+  // ✅ res enthält jetzt die gesetzten Auth-Cookies
+  return res
 }
