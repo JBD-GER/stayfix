@@ -1,0 +1,51 @@
+/* src/app/globals.css */
+
+/* 1) Tailwind-Prefight, Components & Utilities laden */
+@import "tailwindcss";
+
+/* 2) CSS-First Theme-Konfiguration */
+/* 3) Base-Styles */
+@layer base {
+  body {
+    margin: 0;
+    width: 100%;
+    overflow-x: hidden;
+    padding: 0;
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-200);
+    color: var(--color-text-700);
+  }
+
+  h1, .heading-1 { /* Headlines */
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+  h2, .heading-2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-900);
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+  }
+
+  /* Formular-Elemente */
+  input, select, textarea {
+    border: 1px solid var(--color-border-100);
+    border-radius: var(--radius-md);
+    padding: var(--space-2);
+    font-family: var(--font-sans);
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+  }
+}
+
