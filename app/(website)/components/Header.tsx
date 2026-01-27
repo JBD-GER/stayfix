@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
 const navItems = [
@@ -13,6 +13,36 @@ const navItems = [
 
 export default function Header() {
   const [open, setOpen] = useState(false)
+  const [authLoading, setAuthLoading] = useState(true)
+  const [isAuthed, setIsAuthed] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+
+    async function load() {
+      setAuthLoading(true)
+      try {
+        const r = await fetch('/api/me', { cache: 'no-store' })
+        const j = await r.json()
+        if (!alive) return
+        setIsAuthed(!!j?.authed)
+      } catch {
+        if (!alive) return
+        setIsAuthed(false)
+      } finally {
+        if (!alive) return
+        setAuthLoading(false)
+      }
+    }
+
+    load()
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const loginHref = isAuthed ? '/dashboard' : '/login'
+  const loginLabel = isAuthed ? 'Dashboard' : 'Login'
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-2xl">
@@ -49,6 +79,19 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+
+            {/* ✅ Login/Dashboard Button */}
+            <Link
+              href={loginHref}
+              className={[
+                'inline-flex items-center justify-center rounded-full border px-4 py-1.5 text-xs font-medium transition-colors',
+                'border-slate-200 bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900',
+                authLoading ? 'pointer-events-none opacity-60' : '',
+              ].join(' ')}
+            >
+              {authLoading ? '…' : loginLabel}
+            </Link>
+
             <Link
               href="/beratung"
               className="inline-flex items-center justify-center rounded-full border border-[#3B5BFF] px-4 py-1.5 text-xs font-medium text-[#3B5BFF] transition-colors hover:bg-[#3B5BFF] hover:text-white"
@@ -87,6 +130,18 @@ export default function Header() {
                   {item.label}
                 </Link>
               ))}
+
+              <Link
+                href={loginHref}
+                onClick={() => setOpen(false)}
+                className={[
+                  'mt-1 inline-flex items-center justify-center rounded-full border px-4 py-2 text-xs font-medium transition-colors',
+                  'border-slate-200 bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900',
+                  authLoading ? 'pointer-events-none opacity-60' : '',
+                ].join(' ')}
+              >
+                {authLoading ? '…' : loginLabel}
+              </Link>
 
               <Link
                 href="/beratung"

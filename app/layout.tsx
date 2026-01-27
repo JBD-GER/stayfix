@@ -4,6 +4,9 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { Inter } from 'next/font/google'
 
+import ConsentModeDefault from '@/app/components/ConsentModeDefault'
+import ConsentBannerV2 from '@/app/components/ConsentBannerV2'
+
 export const metadata: Metadata = {
   title: {
     default: 'Stayfix – Aufenthaltstitel einfach im Blick',
@@ -13,7 +16,6 @@ export const metadata: Metadata = {
     'Stayfix hilft Unternehmen, Aufenthaltstitel ihrer Mitarbeitenden zentral zu verwalten und rechtzeitig an Abläufe zu erinnern.',
 }
 
-// Inter global einbinden
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -23,7 +25,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="de" className={inter.variable}>
       <body className="min-h-screen bg-white text-slate-900 antialiased font-sans">
+        {/* ✅ Consent Mode Default (läuft trotzdem beforeInteractive) */}
+        <ConsentModeDefault />
+
         {children}
+
+        {/* ✅ Banner gehört in den Body */}
+        <ConsentBannerV2 />
       </body>
     </html>
   )
