@@ -1,4 +1,3 @@
-// app/(website)/components/Header.tsx
 'use client'
 
 import Link from 'next/link'
@@ -8,7 +7,8 @@ import Image from 'next/image'
 const navItems = [
   { href: '/funktionen', label: 'Funktionen' },
   { href: '/ablauf', label: 'Ablauf' },
-  { href: '/haeufige-fragen', label: 'Häufige Fragen' },
+  { href: '/haeufige-fragen', label: 'Haeufige Fragen' },
+  { href: '/projektabschluss', label: 'Projektabschluss' },
 ]
 
 export default function Header() {
@@ -48,7 +48,6 @@ export default function Header() {
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-2xl">
       <div className="px-4 py-3 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          {/* Logo + Brand (linkt auf die Startseite) */}
           <Link href="/" className="group flex items-center gap-2">
             <Image
               src="/stayfix.png"
@@ -59,16 +58,13 @@ export default function Header() {
               priority
             />
             <div className="flex flex-col">
-              <span className="text-sm font-semibold tracking-tight text-slate-900">
-                Stayfix
-              </span>
+              <span className="text-sm font-semibold tracking-tight text-slate-900">Stayfix</span>
               <span className="text-[11px] leading-none text-slate-500">
                 Aufenthaltstitel &amp; Arbeitserlaubnisse im Blick
               </span>
             </div>
           </Link>
 
-          {/* Desktop-Navigation */}
           <nav className="hidden items-center gap-6 text-sm md:flex">
             {navItems.map((item) => (
               <Link
@@ -80,7 +76,6 @@ export default function Header() {
               </Link>
             ))}
 
-            {/* ✅ Login/Dashboard Button */}
             <Link
               href={loginHref}
               className={[
@@ -89,7 +84,7 @@ export default function Header() {
                 authLoading ? 'pointer-events-none opacity-60' : '',
               ].join(' ')}
             >
-              {authLoading ? '…' : loginLabel}
+              {authLoading ? '...' : loginLabel}
             </Link>
 
             <Link
@@ -100,7 +95,6 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* Mobile menu button */}
           <button
             type="button"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white md:hidden"
@@ -115,7 +109,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {open && (
         <div className="border-t border-slate-200 bg-white/95 backdrop-blur-2xl md:hidden">
           <div className="px-4 pb-4 pt-3 sm:px-6 lg:px-8">
@@ -140,7 +133,7 @@ export default function Header() {
                   authLoading ? 'pointer-events-none opacity-60' : '',
                 ].join(' ')}
               >
-                {authLoading ? '…' : loginLabel}
+                {authLoading ? '...' : loginLabel}
               </Link>
 
               <Link
